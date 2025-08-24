@@ -66,9 +66,12 @@
         .content ul, .content ol { 
             margin-bottom: 15px; 
         }
-        .loading { 
-            color: #666; 
-            font-style: italic; 
+        .hint {
+            color: #333;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
         }
         .loading::after {
             content: '';
@@ -171,6 +174,7 @@
             eventSource.close();
             document.getElementById('selectHint').textContent = 'Select any text to make it the title of your next article (once generation completes).';
             document.getElementById('selectHint').classList.remove('loading');
+            document.getElementById('selectHint').classList.add('hint');
         });
 
         eventSource.addEventListener('error', function(event) {
