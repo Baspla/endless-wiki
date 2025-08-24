@@ -187,9 +187,9 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func wikiHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	articleName := vars["article"]
+	articleName, e := url.PathUnescape(vars["article"])
 
-	if articleName == "" {
+	if e != nil || articleName == "" {
 		http.Error(w, "Article name is required", http.StatusBadRequest)
 		return
 	}
