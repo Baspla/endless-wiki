@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>{{.Title}} - Endless Wiki</title>
     <style>
         body { 
@@ -9,6 +10,12 @@
             margin: 0 auto; 
             padding: 20px; 
             line-height: 1.6;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-right: 20px;
         }
         .header { 
             border-bottom: 1px solid #ccc; 
@@ -108,8 +115,7 @@
 </head>
 <body>
     <div class="nav">
-        <a href="/">Home</a>
-        <a href="javascript:history.back()">Back</a>
+        <a href="/" class="title">Endless Wiki</a>
         <div class="search-box">
             <label for="searchInput" style="display:none;">Enter topic</label>
             <input type="text" id="searchInput" placeholder="Enter any topic...">
@@ -164,6 +170,7 @@
         eventSource.addEventListener('complete', function(event) {
             eventSource.close();
             document.getElementById('selectHint').textContent = 'Select any text to make it the title of your next article (once generation completes).';
+            document.getElementById('selectHint').classList.remove('loading');
         });
 
         eventSource.addEventListener('error', function(event) {
