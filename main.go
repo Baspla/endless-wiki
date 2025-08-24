@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 
@@ -200,9 +201,8 @@ func wikiHandler(w http.ResponseWriter, r *http.Request) {
 
 func streamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	articleName := vars["article"]
-
-	if articleName == "" {
+	articleName, e := url.PathUnescape(vars["article"])
+	if e != nil || articleName == "" {
 		http.Error(w, "Article name is required", http.StatusBadRequest)
 		return
 	}
