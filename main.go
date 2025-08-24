@@ -162,6 +162,10 @@ func main() {
 	r.HandleFunc("/", homeHandler).Methods("GET")
 	r.HandleFunc("/wiki/{article}", wikiHandler).Methods("GET")
 	r.HandleFunc("/stream/{article}", streamHandler).Methods("GET")
+	r.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "static/favicon.ico")
+	}).Methods("GET")
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
 	port := os.Getenv("PORT")
 	if port == "" {
