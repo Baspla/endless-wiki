@@ -25,6 +25,53 @@ type OllamaResponse struct {
 	Done     bool   `json:"done"`
 }
 
+var supportedLangs = map[string]struct {
+	Name   string
+	Prompt func(article string) string
+}{
+	"en": {
+		Name: "English",
+		Prompt: func(article string) string {
+			return fmt.Sprintf(`You are a wiki article generator. Generate a comprehensive informative article about "%s" in markdown format.
+
+Requirements:
+- Write like wikipedia in an encyclopedic style
+- Include multiple sections with clear markdown headers (## Section Name)
+- Use proper markdown formatting including **bold**, *italic*, lists, etc.
+- Include relevant subsections where appropriate
+- Make the article detailed and informative
+- Provide only the markdown text of the article, no followup questions
+
+Generate the article now:`, article)
+		},
+	},
+	"de": {
+		Name: "Deutsch",
+		Prompt: func(article string) string {
+			return fmt.Sprintf(`Du bist ein Generator für Wiki-Artikel. Erstelle einen umfassenden, informativen Artikel über "%s" im Markdown-Format.
+
+Anforderungen:
+- Schreibe im enzyklopädischen Stil wie in der Wikipedia
+- Verwende mehrere Abschnitte mit klaren Markdown-Überschriften (## Abschnittsname)
+- Nutze korrektes Markdown mit **fett**, *kursiv*, Listen usw.
+- Füge relevante Unterabschnitte hinzu, wo sinnvoll
+- Der Artikel soll detailliert und informativ sein
+- Gib nur den Markdown-Text des Artikels zurück, ohne Rückfragen
+
+Erstelle den Artikel jetzt:`, article)
+		},
+	},
+}
+
+// getLang safely selects a language code, falling back to "en".
+func getLang(r *http.Request) string {
+	lang := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("lang")))
+	if _, ok := supportedLangs[lang]; ok {
+		return lang
+	}
+	return "en"
+}
+
 func main() {
 	// Ensure the preferred model is downloaded on startup
 	ensureModelDownloaded()
@@ -66,8 +113,9 @@ func wikiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Render the streaming page template
-	renderStreamingWikiPage(w, articleName)
+	lang := getLang(r)
+
+	renderStreamingWikiPage(w, articleName, lang)
 }
 
 func streamHandler(w http.ResponseWriter, r *http.Request) {
@@ -79,6 +127,9 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get language from query; fallback handled inside getLang
+	lang := getLang(r)
+
 	// Set headers for Server-Sent Events
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
@@ -89,7 +140,7 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Generate article content using Ollama with streaming
-	err := generateArticleStream(ctx, articleName, w)
+	err := generateArticleStream(ctx, articleName, lang, w)
 	if err != nil {
 		// Check if it was cancelled due to client disconnect
 		if ctx.Err() == context.Canceled {
@@ -98,6 +149,7 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Printf("Error generating article: %v", err)
 		fmt.Fprintf(w, "event: error\ndata: Failed to generate article\n\n")
+		return
 	}
 
 	// Send completion event (only if not cancelled)
@@ -106,7 +158,7 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func generateArticleStream(ctx context.Context, articleName string, w http.ResponseWriter) error {
+func generateArticleStream(ctx context.Context, articleName, lang string, w http.ResponseWriter) error {
 	ollamaHost := os.Getenv("OLLAMA_HOST")
 	if ollamaHost == "" {
 		ollamaHost = "http://localhost:11434"
@@ -117,19 +169,11 @@ func generateArticleStream(ctx context.Context, articleName string, w http.Respo
 		ollamaModel = "llama2"
 	}
 
-	log.Printf("Generating article '%s' using model '%s' at host '%s'", articleName, ollamaModel, ollamaHost)
+	// Select prompt by language; fallback already ensured by getLang
+	promptTpl := supportedLangs[lang].Prompt
+	prompt := promptTpl(articleName)
 
-	prompt := fmt.Sprintf(`You are a wiki article generator. Generate a comprehensive informative article about "%s" in markdown format. 
-
-Requirements:
-- Write like wikipedia in an encyclopedic style
-- Include multiple sections with clear markdown headers (## Section Name)
-- Use proper markdown formatting including **bold**, *italic*, lists, etc.
-- Include relevant subsections where appropriate
-- Make the article detailed and informative
-- Provide only the markdown text of the article, no followup questions
-
-Generate the article now:`, articleName)
+	log.Printf("Generating article '%s' using model '%s' at host '%s' in language '%s'", articleName, ollamaModel, ollamaHost, lang)
 
 	reqBody := OllamaRequest{
 		Model:  ollamaModel,
@@ -198,7 +242,6 @@ Generate the article now:`, articleName)
 	return nil
 }
 
-
 func ensureModelDownloaded() {
 	ollamaHost := os.Getenv("OLLAMA_HOST")
 	if ollamaHost == "" {
@@ -239,7 +282,7 @@ func ensureModelDownloaded() {
 	}
 }
 
-func renderStreamingWikiPage(w http.ResponseWriter, title string) {
+func renderStreamingWikiPage(w http.ResponseWriter, title, lang string) {
 	tmpl, err := template.ParseFiles("templates/wiki.html")
 	if err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
@@ -248,8 +291,10 @@ func renderStreamingWikiPage(w http.ResponseWriter, title string) {
 
 	data := struct {
 		Title string
+		Lang  string
 	}{
 		Title: title,
+		Lang:  lang,
 	}
 
 	w.Header().Set("Content-Type", "text/html")

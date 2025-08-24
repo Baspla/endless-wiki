@@ -107,6 +107,11 @@
             <input type="text" id="searchInput" placeholder="Enter any topic...">
             <button id="searchButton">Generate Article</button>
         </div>
+        <label for="lang">Language:</label>
+        <select id="lang" name="lang">
+            <option value="en" selected>English</option>
+            <option value="de">Deutsch</option>
+        </select>
         <span id="selectHint">Generating ...</span>
     </div>
     
@@ -120,58 +125,57 @@
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
+        // Setzt das Dropdown entsprechend der URL-Query
+        function setLangFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const lang = params.get('lang') || 'en';
+            document.getElementById('lang').value = lang;
+        }
+
+        setLangFromQuery();
+
         const eventSource = new EventSource('/stream/{{.Title}}');
         const contentDiv = document.getElementById('content');
         const popup = document.getElementById('selectionPopup');
         let selectedText = '';
-        
+
         eventSource.onmessage = function(event) {
             // Handle default messages
         };
-        
+
         eventSource.addEventListener('content', function(event) {
             let content = event.data.replace(/\\n/g, '\n');
-            
-            // Strip out markdown code fences if they appear at the start
             content = content.replace(/^```[a-zA-Z]*\n?/, '').replace(/\n?```$/, '');
-            
-            // Parse markdown and render as HTML
             const htmlContent = marked.parse(content);
             contentDiv.innerHTML = htmlContent;
         });
-        
+
         eventSource.addEventListener('complete', function(event) {
             eventSource.close();
             document.getElementById('selectHint').textContent = 'Select any text to make it the title of your next article (once generation completes).';
         });
-        
+
         eventSource.addEventListener('error', function(event) {
             contentDiv.innerHTML = '<p style="color: red;">Error generating article. Please try again.</p>';
             eventSource.close();
         });
-        
+
         eventSource.onerror = function(event) {
             contentDiv.innerHTML = '<p style="color: red;">Connection error. Please try again.</p>';
             eventSource.close();
         };
-        
-        // Handle text selection
+
         document.addEventListener('mouseup', function(event) {
-            // Don't interfere if clicking on the popup
             if (event.target === popup || popup.contains(event.target)) {
                 return;
             }
-            
             setTimeout(function() {
                 const selection = window.getSelection();
                 const text = selection.toString().trim();
-                
                 if (text.length > 0 && text.length <= 100) {
                     selectedText = text;
                     const range = selection.getRangeAt(0);
                     const rect = range.getBoundingClientRect();
-                    
-                    // Position popup above the selection
                     popup.style.left = Math.max(10, rect.left + rect.width / 2 - 75) + 'px';
                     popup.style.top = (rect.top - 50 + window.scrollY) + 'px';
                     popup.style.display = 'block';
@@ -181,43 +185,37 @@
                 }
             }, 100);
         });
-        
-        // Handle popup click
+
         popup.addEventListener('click', function() {
             if (selectedText) {
-                window.location.href = '/wiki/' + encodeURIComponent(selectedText);
+                const lang = document.getElementById('lang').value;
+                window.location.href = '/wiki/' + encodeURIComponent(selectedText) + '?lang=' + encodeURIComponent(lang);
             }
         });
-        
-        // Hide popup when clicking elsewhere
+
         document.addEventListener('click', function(event) {
             if (event.target !== popup && !popup.contains(event.target)) {
                 popup.style.display = 'none';
-                // Don't clear selection immediately, let it persist briefly
             }
         });
-        
-        // Hide popup when selection changes to empty (but with delay to allow popup clicks)
+
         document.addEventListener('selectionchange', function() {
             setTimeout(function() {
                 const selection = window.getSelection();
                 if (selection.toString().trim().length === 0 && popup.style.display === 'block') {
-                    // Only hide if we're not hovering over the popup
                     if (!popup.matches(':hover')) {
                         popup.style.display = 'none';
                     }
                 }
             }, 200);
         });
-        
-        // Stop article generation when user navigates away
+
         window.addEventListener('beforeunload', function() {
             if (eventSource && eventSource.readyState !== EventSource.CLOSED) {
                 eventSource.close();
             }
         });
-        
-        // Also stop generation when page becomes hidden (tab switching, etc.)
+
         document.addEventListener('visibilitychange', function() {
             if (document.hidden && eventSource && eventSource.readyState !== EventSource.CLOSED) {
                 eventSource.close();
@@ -232,11 +230,18 @@
 
         document.getElementById('searchButton').addEventListener('click', searchWiki);
 
+        document.getElementById('lang').addEventListener('change', function() {
+            const params = new URLSearchParams(window.location.search);
+            params.set('lang', this.value);
+            window.location.search = params.toString();
+        });
+
         function searchWiki() {
             const input = document.getElementById('searchInput');
             const topic = input.value.trim();
+            const lang = document.getElementById('lang').value;
             if (topic) {
-                window.location.href = '/wiki/' + encodeURIComponent(topic);
+                window.location.href = '/wiki/' + encodeURIComponent(topic) + '?lang=' + encodeURIComponent(lang);
             }
         }
     </script>
