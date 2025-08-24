@@ -203,7 +203,7 @@
 
     setLangFromQuery();
 
-    const eventSource = new EventSource('/stream/{{.Title}}?lang={{.Lang}}');
+    const eventSource = new EventSource('/stream/' + encodeURIComponent('{{.Title}}') + '?lang={{.Lang}}');
     const contentDiv = document.getElementById('content');
     const popup = document.getElementById('selectionPopup');
     let selectedText = '';
