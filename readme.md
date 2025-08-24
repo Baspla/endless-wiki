@@ -52,3 +52,5 @@ This is a fork of [this repo](github.com/XanderStrike/endless-wiki) by XanderStr
 - Multi-Language support (en, de, fr, es, it, jp, zh)
 - Saving pages as html files
 - support for encoded symbols in queries
+
+Please note that I am not the original author of the project, and I do not take credit for the original work. All credit goes to XanderStrike and their amazing vibe code.
