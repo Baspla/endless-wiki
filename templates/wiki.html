@@ -33,7 +33,7 @@
             text-decoration: underline; 
         }
         .search-box { margin: 20px 0; }
-        input[type="text"] { padding: 10px; width: 300px; font-size: 14px; }
+        input[type="text"] { padding: 5px 10px; width: 300px; font-size: 14px; }
         button { padding: 5px 10px; font-size: 14px; background: #007cba; color: white; border: none; cursor: pointer; }
         button:hover { background: #005a87; }
         .content { 
@@ -113,7 +113,7 @@
             <input type="text" id="searchInput" placeholder="Enter any topic...">
             <button id="searchButton">Generate Article</button>
         </div>
-        <label for="lang">Language:</label>
+        <label for="lang" style="display:none;">Language</label>
         <select id="lang" name="lang">
             <option value="en" selected>English</option>
             <option value="de">Deutsch</option>
@@ -140,7 +140,7 @@
 
         setLangFromQuery();
 
-        const eventSource = new EventSource('/stream/{{.Title}}');
+        const eventSource = new EventSource('/stream/{{.Title}}?lang={{.Lang}}');
         const contentDiv = document.getElementById('content');
         const popup = document.getElementById('selectionPopup');
         let selectedText = '';
