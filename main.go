@@ -156,7 +156,7 @@ func main() {
 	// Ensure the preferred model is downloaded on startup
 	ensureModelDownloaded()
 
-	r := mux.NewRouter()
+	r := mux.NewRouter().UseEncodedPath()
 
 	r.HandleFunc("/", homeHandler).Methods("GET")
 	r.HandleFunc("/wiki/{article}", wikiHandler).Methods("GET")
