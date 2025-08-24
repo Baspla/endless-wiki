@@ -55,7 +55,6 @@ Anforderungen:
 - Verwende mehrere Abschnitte mit klaren Markdown-Überschriften (## Abschnittsname)
 - Nutze korrektes Markdown mit **fett**, *kursiv*, Listen usw.
 - Füge relevante Unterabschnitte hinzu, wo sinnvoll
-- Bei interessanten Themen verlinke das Wort im Text mit einer Wiki-Seite [[Beispiel]](/wiki/Beispiel?lang=de)
 - Der Artikel soll detailliert und informativ sein
 - Gib nur den Markdown-Text des Artikels zurück, ohne Rückfragen
 
