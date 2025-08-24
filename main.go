@@ -39,6 +39,7 @@ Requirements:
 - Include multiple sections with clear markdown headers (## Section Name)
 - Use proper markdown formatting including **bold**, *italic*, lists, etc.
 - Include relevant subsections where appropriate
+- Include links to other wiki articles with a link to /wiki/{article_name}?lang=en
 - Make the article detailed and informative
 - Provide only the markdown text of the article, no followup questions
 
@@ -55,6 +56,7 @@ Anforderungen:
 - Verwende mehrere Abschnitte mit klaren Markdown-Überschriften (## Abschnittsname)
 - Nutze korrektes Markdown mit **fett**, *kursiv*, Listen usw.
 - Füge relevante Unterabschnitte hinzu, wo sinnvoll
+- Füge Links zu anderen Wiki-Artikeln hinzu mit einem Link zu /wiki/{Artikelname}?lang=de
 - Der Artikel soll detailliert und informativ sein
 - Gib nur den Markdown-Text des Artikels zurück, ohne Rückfragen
 
@@ -71,6 +73,7 @@ Requisiti:
 - Includi più sezioni con intestazioni markdown chiare (## Nome Sezione)
 - Usa una formattazione markdown corretta, inclusi **grassetto**, *corsivo*, elenchi, ecc.
 - Includi sottosezioni rilevanti dove opportuno
+- Includi link ad altri articoli wiki con un link a /wiki/{nome_articolo}?lang=it
 - L'articolo deve essere dettagliato e informativo
 - Fornisci solo il testo markdown dell'articolo, senza domande di follow-up
 
@@ -87,6 +90,7 @@ Requisitos:
 - Incluye varias secciones con encabezados markdown claros (## Nombre de la Sección)
 - Usa formato markdown adecuado incluyendo **negrita**, *cursiva*, listas, etc.
 - Incluye subsecciones relevantes donde corresponda
+- Incluye enlaces a otros artículos wiki con un enlace a /wiki/{nombre_artículo}?lang=es
 - El artículo debe ser detallado e informativo
 - Proporciona solo el texto markdown del artículo, sin preguntas de seguimiento
 
@@ -103,6 +107,7 @@ Exigences :
 - Incluez plusieurs sections avec des titres markdown clairs (## Nom de la section)
 - Utilisez une mise en forme markdown appropriée, y compris **gras**, *italique*, listes, etc.
 - Ajoutez des sous-sections pertinentes si nécessaire
+- Incluez des liens vers d'autres articles wiki avec un lien vers /wiki/{nom_article}?lang=fr
 - L'article doit être détaillé et informatif
 - Fournissez uniquement le texte markdown de l'article, sans questions de suivi
 
@@ -119,6 +124,7 @@ Générez l'article maintenant :`, article)
 - 複数のセクションを明確なマークダウン見出し（## セクション名）で分ける
 - **太字**、*斜体*、リストなど、適切なマークダウン書式を使用する
 - 必要に応じて関連するサブセクションを含める
+- 他のウィキ記事へのリンクを含め、/wiki/{記事名}?lang=ja へのリンクを追加する
 - 記事は詳細かつ情報豊富であること
 - 記事のマークダウンテキストのみを返し、追加の質問はしない
 
@@ -135,6 +141,7 @@ Générez l'article maintenant :`, article)
 - 包含多个部分，并使用清晰的markdown标题（## 部分名称）
 - 正确使用markdown格式，包括**加粗**、*斜体*、列表等
 - 适当时加入相关的子部分
+- 包含指向其他维基文章的链接，链接格式为/wiki/{article_name}?lang=zh
 - 文章应详细且信息丰富
 - 只提供文章的markdown文本，不要附加后续问题
 
