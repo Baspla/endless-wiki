@@ -102,7 +102,12 @@
     <div class="nav">
         <a href="/">Home</a>
         <a href="javascript:history.back()">Back</a>
-        Select any text to make it the title of your next article (once generation completes).
+        <div class="search-box">
+            <label for="searchInput" style="display:none;">Enter topic</label>
+            <input type="text" id="searchInput" placeholder="Enter any topic...">
+            <button id="searchButton">Generate Article</button>
+        </div>
+        <span id="selectHint">Generating ...</span>
     </div>
     
     <div class="content" id="content">
@@ -137,6 +142,7 @@
         
         eventSource.addEventListener('complete', function(event) {
             eventSource.close();
+            document.getElementById('selectHint').textContent = 'Select any text to make it the title of your next article (once generation completes).';
         });
         
         eventSource.addEventListener('error', function(event) {
@@ -217,6 +223,22 @@
                 eventSource.close();
             }
         });
+
+        document.getElementById('searchInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                searchWiki();
+            }
+        });
+
+        document.getElementById('searchButton').addEventListener('click', searchWiki);
+
+        function searchWiki() {
+            const input = document.getElementById('searchInput');
+            const topic = input.value.trim();
+            if (topic) {
+                window.location.href = '/wiki/' + encodeURIComponent(topic);
+            }
+        }
     </script>
 </body>
 </html>

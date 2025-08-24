@@ -17,10 +17,11 @@
 <body>
     <h1>Welcome to Endless Wiki</h1>
     <p>An infinite wiki powered by AI. Search for any topic and get a generated article with links to explore further.</p>
-    
+
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Enter any topic..." onkeypress="handleKeyPress(event)">
-        <button onclick="searchWiki()">Generate Article</button>
+        <label for="searchInput" style="display:none;">Enter topic</label>
+        <input type="text" id="searchInput" placeholder="Enter any topic...">
+        <button id="searchButton">Generate Article</button>
     </div>
     
     <div class="examples">
@@ -31,14 +32,16 @@
         <a href="/wiki/Space Exploration">Space Exploration</a>
         <a href="/wiki/Renaissance Art">Renaissance Art</a>
     </div>
-    
+
     <script>
-        function handleKeyPress(event) {
+        document.getElementById('searchInput').addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 searchWiki();
             }
-        }
-        
+        });
+
+        document.getElementById('searchButton').addEventListener('click', searchWiki);
+
         function searchWiki() {
             const input = document.getElementById('searchInput');
             const topic = input.value.trim();
